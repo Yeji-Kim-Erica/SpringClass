@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="org.doit.ik.mapper.EmpMapper">
+
+	<select id="selectEmpno" parameterType="org.doit.ik.domain.EmpDTO" resultType="int">
+		SELECT COUNT(*)
+		FROM emp
+		WHERE empno = #{empno}
+	</select>
+	
+	<select id="selectUserByEmpno" parameterType="int" resultType="org.doit.ik.domain.EmpDTO">
+		SELECT *
+		FROM emp
+		WHERE empno = #{empno}
+	</select>
+
+</mapper>

@@ -1,0 +1,5 @@
+package org.doit.ik.domain;
+
+public class PageDTO { // 페이징 블럭
+
+}

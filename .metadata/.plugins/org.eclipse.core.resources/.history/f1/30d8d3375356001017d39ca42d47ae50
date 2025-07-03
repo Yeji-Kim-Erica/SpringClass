@@ -1,0 +1,11 @@
+package org.doit.ik.service;
+
+import java.util.List;
+
+import org.doit.ik.domain.BoardVO;
+
+public interface BoardService {
+
+	List<BoardVO> getList();
+	
+}

@@ -1,0 +1,15 @@
+package org.doit.ik.domain;
+
+import lombok.Getter;
+import lombok.ToString;
+
+@Getter
+@ToString
+public class PageDTO { // 페이징 블럭
+
+	private int startPage;
+	private int endPage;
+	private boolean prev;
+	private boolean next;
+	
+}

@@ -1,0 +1,44 @@
+[수업 내용 정리]
+
+	1. SL02_BOARD2_PAGINATION -> SL02_BOARD3_SEARCH
+	
+	2. 게시판 + 페이징 처리 추가 코딩
+	
+BEGIN
+    FOR i IN 1 .. 158
+    LOOP 
+      
+        INSERT INTO tbl_board (bno, title, content, writer)
+        VALUES (seq_board.NEXTVAL, '스프링-'||i, '스프링-'||i, '홍길동');
+
+    END LOOP;  
+END;
+COMMIT;
+
+BEGIN
+    FOR i IN 1 .. 158
+    LOOP 
+      IF MOD(i,5)=0 OR MOD(i, 17)=0 THEN
+        UPDATE tbl_board
+        SET title = '자바-' || i        
+        WHERE bno = i;
+      END IF;
+    END LOOP;  
+END;
+COMMIT;
+
+ROLLBACK;
+	
+	3. 게시판 검색
+		1) 단일 항목 검색 : 제목("t"), 내용("c"), 작성자("w")
+		2) 다중 항목 검색 : 제목 + 내용 ("tc")
+						 제목 + 작성자 ("tw")
+						 제목 + 내용 + 작성자 ("tcw")
+		
+	4. 검색조건(type) : select, checkbox
+	   검색어(keyword) : input
+	   
+	5. list.jsp : 검색 부분 추가
+	
+	// 강사님 자료 참고하기
+	

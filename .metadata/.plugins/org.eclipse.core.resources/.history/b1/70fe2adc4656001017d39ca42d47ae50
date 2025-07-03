@@ -1,0 +1,8 @@
+package org.doit.ik.mapper;
+
+public interface BoardMapper {
+
+	// [1] 게시글 목록
+	
+	
+}

@@ -1,0 +1,9 @@
+package org.doit.ik.mapper;
+
+import org.apache.ibatis.annotations.Select;
+
+public interface BoardMapper {
+
+	// 
+	
+}

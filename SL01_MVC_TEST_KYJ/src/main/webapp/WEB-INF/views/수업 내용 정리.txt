@@ -1,0 +1,14 @@
+[ 수업 내용 정리 ]
+1. home.jsp
+	<a href="/scott/dept"></a>로 요청 시
+	dept.jsp로 응답하도록 하기
+
+	/scott/dept 요청 -> ScottController.java
+					   dept() 컨트롤러 메서드 호출
+					   this.deptMapper.select() -> WEB-INF/views/scott/dept.jsp 뷰 응답
+
+2. dept.jsp
+	부서 번호를 체크한 후 "Search" 검색 버튼을 클릭 -> /scott/emp 요청
+	/scott/emp 요청 -> ScottController.java
+					  emp() 컨트롤러 메서드 호출
+					  this.empMapper.select() -> WEB-INF/views/scott/emp.jsp 뷰 응답

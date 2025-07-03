@@ -1,0 +1,12 @@
+package org.doit.ik.mapper;
+
+import java.util.List;
+
+import org.doit.ik.domain.BoardVO;
+
+public interface BoardMapper {
+
+	// [1] 게시글 목록 조회
+	List<BoardVO> getList();
+	
+}

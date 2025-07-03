@@ -1,0 +1,121 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page trimDirectiveWhitespaces="true" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="shortcut icon" type="image/x-icon" href="/images/SiSt.ico">
+<title>김예지 (2025. 7. 2. 오후 2:20:23)</title>
+<link rel="stylesheet" href="/resources/cdn-main/example.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="/resources/cdn-main/example.js"></script>
+<style>
+ span.material-symbols-outlined{
+    vertical-align: text-bottom;
+ }
+</style>
+</head>
+<body>
+<header>
+  <h1 class="main"><a href="#" style="position: absolute;top:30px;">yErica HOme</a></h1>
+  <ul>
+    <li><a href="#">로그인</a></li>
+    <li><a href="#">회원가입</a></li>
+  </ul>
+</header>
+<div>
+  <xmp class="code"> 
+        /board/modify.jsp
+  </xmp>
+  
+    <form action="/board/modify" method="post">
+     <table>  
+       <tbody>
+         <tr>
+           <th>글번호</th>
+           <td><input type="text" name="bno" class="full"  readonly="readonly"  value="${ boardVO.bno }"></td>        
+         </tr> 
+         <tr>
+           <th>제목</th>
+           <td><input type="text" name="title" class="full"  value="${ boardVO.title }"></td>        
+         </tr> 
+         <tr>
+           <th>내용</th>
+           <td><textarea  name="content" class="full" ><c:out value="${ boardVO.content }"></c:out></textarea></td>        
+         </tr> 
+         <tr>
+           <th>작성자</th>
+           <td><input type="text" name="writer" class="short" readonly="readonly" value="${ boardVO.writer }"></td>        
+         </tr>  
+       </tbody> 
+       <tfoot>
+         <tr>
+           <td colspan="2">
+             <button type="button" data-oper="modify" class="edit">Modify</button>
+             <button type="button" data-oper="list" class="list">List</button>
+           </td>
+         </tr>
+       </tfoot>
+     </table>
+     
+     <input type="hidden" name="${ _csrf.parameterName }" value="${ _csrf.token }">
+  	 <input type="hidden" name="pageNum" value="${criteria.pageNum}">
+  	 <input type="hidden" name="amount" value="${criteria.amount}">
+       
+  </form>
+  
+</div>
+
+<script>
+	$(function() {
+		const formObj = $("form");
+		
+		$("tfoot button").on("click", function() {
+			let operation = $(this).data("oper");
+					
+			switch (operation) {
+			case "modify":
+				formObj.submit();
+				break;
+			
+			case "list":
+				const pageNumClone = $(":hidden[name='pageNum']").clone();
+				const amountClone = $(":hidden[name='amount']").clone();
+				
+				formObj
+				   .attr({
+					   "action" : "/board/list",
+					   "method" : "GET"
+				   })
+				   .empty()
+				   .append(pageNumClone)
+				   .append(amountClone)
+				   .submit();
+				
+				// location.href = "/board/list?pageNum=${criteria.pageNum}&amount=${criteria.amount}";
+				
+				// location.href = "/board/list";
+				
+				/*
+				formObj
+				   .attr({
+					   "action" : "/board/list",
+					   "method" : "GET"
+				   })
+				   .empty()
+				   .submit();
+				*/
+				
+				break;
+
+			default:
+				break;
+			}
+		}); // $("tfoot button").on("click", function() {
+	}); // $(function() {
+</script>
+
+</body>
+</html> 
