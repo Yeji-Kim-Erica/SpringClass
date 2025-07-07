@@ -1,0 +1,7 @@
+[수업 내용 정리]
+
+1. SL00_DefaultSettings -> SL03_DI
+2. WEB-INF/views
+	ㄴ 수업내용정리.txt 추가
+3. web.xml
+	ㄴ EncodingFilter 추가
