@@ -1,0 +1,15 @@
+[수업 내용 정리]
+
+1. MyBatis 실습 2
+	- 조인(join) 처리
+	- dept/emp/salgrade 테이블 조인
+	- dept/emp 요청 URL
+	- DeptEmpSalgradeMapper.xml 매퍼 xml 파일
+	
+---- MyBatis3
+	- 매퍼 XML 파일 수정 : <resultMap> 태그를 사용해서 수정
+	** resultMap – The most complicated and powerful element that describes how to load your objects from the database result sets.
+		ㄴ 데이터베이스 결과데이터를 객체에 로드하는 방법을 설명하는 가장 복잡하고 강력한 요소
+		ㄴ 마이바티스에서 가장 중요하고 강력한 element
+		ㄴ ResultSet에서 데이터를 가져올 때 작성되는 JDBC 코드를 대부분 줄여주는 역할
+		ㄴ ResultMap은 간단한 구문에서는 

@@ -1,0 +1,7 @@
+[수업 내용 정리]
+
+1. MyBatis 실습 2
+	- 조인(join) 처리
+	- dept/emp/salgrade 테이블 조인
+	- dept/emp 요청 URL
+	- DeptEmpSalgradeMapper.xml 매퍼 xml 파일

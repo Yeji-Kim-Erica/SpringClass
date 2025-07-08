@@ -2,6 +2,13 @@
 
 > p.563 MyBatis 연동 지원
 
+- MyBatis-Spring 모듈 추가
+- SqlSessionFactoryBean을 이용해서 SqlSessionFactory 설정
+- 트랜잭션 설정
+- MyBatis를 이용한 DAO 구현
+	- SqlSession 이용 구현
+	- 매퍼 동적 생성 이용 구현
+
 1. pom.xml 모듈 추가
 
       <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis p91-->
@@ -25,6 +32,9 @@
 	     <property name="dataSource" ref="dataSource"></property>
 	     <property name="configLocation" value="classpath:org/doit/ik/mapper/mybatis-config.xml"></property>
 	   </bean>
+	   
+	   -> p.564 내용으로 수정
+	   
 	
 3. 트랜잭션 설정
 	ㄴ root-context.xml
@@ -34,8 +44,27 @@
 	     <property name="dataSource"  ref="dataSource" />
 	   </bean>
 
-4. DAO
-	1) SqlSession을 이용한 DAO 구현
+4. 실습
+	1) org/doit/ik/domain 패키지
+		ㄴ DeptDTO.java
+	2) views/scott 폴더
+		ㄴ dept.jsp
+	3) src/main/resources/mybatis 폴더
+		ㄴ DeptMapper.xml
+	4) org/doit/ik/mapper 패키지
+		ㄴ DeptMapper.java
+	5) org/doit/ik/controller 패키지
+		ㄴ ScottController.java
+
+5. DAO를 구현하는 방법 2가지
+	1) SqlSession Template을 이용한 DAO 구현 (p.567)
+		- sqlSession, sqlSession Template, sqlSession Support...
+		교재에 나온 방법: ItemDao 인터페이스 -> MyBatisItemDao 구현
+		우리가 할 방법: DeptMapper.java 인터페이스 -> DeptMapperDao.java 구현
+		
 	2) Mapper 동적 생성 이용한 DAO 구현
+		- Mapper 객체를 생성
+		- 자동으로 component scan 활용
+	
 	
 	

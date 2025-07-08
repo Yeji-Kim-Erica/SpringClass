@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class TimeMybatisController { // ListHandler 같은 역할
 	
 	// Dependency Injection (DI), 의존성 주입
-	@Autowired
+	@Autowired(required = false)
 	private TimeMapper timeMapper;
 	
 	private static final Logger logger = LoggerFactory.getLogger(TimeMybatisController.class);

@@ -14,6 +14,9 @@
 <h3>
 	<a href="/time">/time</a>
 </h3>
+<h3>
+	<a href="/scott/dept">DEPT</a>
+</h3>
 
 <!-- 
 
