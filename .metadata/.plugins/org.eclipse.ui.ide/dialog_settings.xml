@@ -134,6 +134,8 @@
 		<item key="WizardProjectsImportPage.STORE_CLOSE_CREATED_PROJECTS_ID" value="false"/>
 		<item key="WizardProjectsImportPage.STORE_HIDE_CONFLICTING_PROJECTS_ID" value="false"/>
 		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="C:\Class\SpringClass\SL07_UPLOAD_CMR"/>
+			<item value="C:\Class\SpringClass\SL06_NLMVC2"/>
 			<item value="C:\Class\SpringClass\SL02_REST_TEST"/>
 		</list>
 		<list key="WizardProjectsImportPage.STORE_ARCHIVES">

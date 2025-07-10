@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <aop-reference-model>
-<aop-project name="SL05_MYBATIS"/>
 <aop-project name="SL03_DI"/>
+<aop-project name="SL07_UPLOAD_CMR"/>
+<aop-project name="SL06_NLMVC3_ATTACHEDFILE"/>
 </aop-reference-model>

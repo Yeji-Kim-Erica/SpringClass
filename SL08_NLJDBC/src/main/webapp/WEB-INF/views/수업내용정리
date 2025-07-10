@@ -1,0 +1,12 @@
+[수업내용정리]
+1. SL06_NLMVC3_ATTACHEDFILE -> SL08_NLJDBC
+
+2. p.475(477) Chapter 11 : 데이터베이스 연동 지원과 JDBC 지원
+(MyBatis가 아닌, 스프링에서 제공하는 기능을 이용)
+[스프링 JDBC]
+1. 데이터베이스에 연동하기 위해 데이터베이스에 연결하는 작업: DataSource 사용
+2. JdbcTemplate 같은 클래스를 사용해 DB 처리
+	ㄴ query()
+	ㄴ queryForList()
+	ㄴ queryForObject()
+	ㄴ update()

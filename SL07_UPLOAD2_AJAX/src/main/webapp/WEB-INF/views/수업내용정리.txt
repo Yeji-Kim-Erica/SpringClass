@@ -1,0 +1,10 @@
+[수업 내용 정리]
+
+1. webapp
+	ㄴ ajax 폴더 생성
+		ㄴ upload 파일 생성
+
+2. src/main/java/org/doit/ik/controller
+	ㄴ AjaxUploadController.java
+	
+3. 
