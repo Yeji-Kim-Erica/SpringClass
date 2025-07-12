@@ -1,0 +1,39 @@
+[수업내용정리] 스프링 트랜잭션 처리
+
+p.522(524) 선언적 트랜잭션 처리 (2가지 중 하나)
+	ㄴ <tx:advice> xml 파일 사용
+
+1. SL09_NLTRANSACTION_TMANAGER_TTEMPLE -> SL09_NLTRANSACTION2_TXADVICE
+
+2. tx 네임스페이스를 이용한 트랜잭션 설정
+	- pom.xml
+	
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+	
+	- servlet-context.xml
+		ㄴ Namespaces
+			ㄴ tx 체크박스에 체크 표시
+			
+3. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			

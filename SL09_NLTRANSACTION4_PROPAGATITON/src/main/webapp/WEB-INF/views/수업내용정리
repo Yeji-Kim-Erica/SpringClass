@@ -1,0 +1,87 @@
+[수업내용정리] 스프링 트랜잭션 처리
+
+p.511(513) 트랜잭션 전파와 격리 레벨
+
+1. SL09_NLTRANSACTION3_ANNOTATION -> SL09_NLTRANSACTION4_PROPAGATITON
+
+2. 전파 방식 ?
+	현재 트랜잭션이 처리 중인 메서드 안에서
+	또 다른 트랜잭션 처리 메서드를 호출하는 경우
+	중복된 트랜잭션을 어떻게 처리할지 결정하는 속성
+
+3. 실습
+
+	NoticeDaoImpl.java
+		ㄴ insert() : @Transactional
+			1) 공지사항 글쓰기 (insert)
+			2) 작성자의 포인트 + 1
+			
+		ㄴ insertAndPointUpOfMember 트 X
+			insert() 트 O -> TEST8 성공
+			insert() 트 O -> TEST8 (2) 실패..해야 하는데 왜 TEST8(2) 까지 글이 써졌지??
+			
+			=> insert @T
+			   insert @T -> 트랜잭션 처리가 안됨
+			   
+			   왜?
+			   	ㄴ 클래스 내에서 다른 메서드를 호출하는 구조로는 AOP 방식으로 트랜잭션 처리가 되지 않는다
+			   해결 : insertAndPointUpOfMember() 메서드와
+			   		 insert() 메서드의 클래스를 서로 다르게 해서 분리하면 됨
+			   처리 방식 : MemberShipService.insertAndPointUpOfMember 선언 (새로운 클래스 선언)
+			   			 NoticeDao.insert() 선언
+			
+	----------------------------------
+
+    // 공지사항 추가하는 메서드 + 작성자 포인트 1 증가
+	@Transactional(propagation = Propagation.REQUIRED)
+	@Override
+	public int insert(NoticeVO notice) throws ClassNotFoundException, SQLException {
+		int result = 0;
+		
+		// 1. 공지사항 쓰기
+		String sql = "INSERT INTO NOTICES"
+	            + " (SEQ, TITLE, CONTENT, WRITER, REGDATE, HIT, FILESRC)"
+	            + " VALUES( "
+	            + "(SELECT NVL(MAX(TO_NUMBER(SEQ)),0)+1 FROM NOTICES), :title, :content, :writer, SYSDATE, 0, :filesrc)";
+		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(notice);
+		result += this.npJdbcTemplate.update(sql, paramSource);
+		
+		// 2. 포인트 1 증가
+		sql = " UPDATE MEMBER "
+			+ " SET point = point + 1 "
+			+ " WHERE id = :id ";
+		MapSqlParameterSource paramSource2 = new MapSqlParameterSource();
+		paramSource2.addValue("id", "admin");
+		result += this.npJdbcTemplate.update(sql, paramSource2);
+		
+		return result;
+	}
+	
+	// 트랜잭션 처리 테스트
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+	@Override
+	public int insertAndPointUpOfMember(NoticeVO notice, String id) throws ClassNotFoundException, SQLException {
+		int result = 0;
+		result += insert(notice);
+		notice.setTitle(notice.getTitle() + " (2)");
+		result += insert(notice);
+		return result;
+	}
+	
+4. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			

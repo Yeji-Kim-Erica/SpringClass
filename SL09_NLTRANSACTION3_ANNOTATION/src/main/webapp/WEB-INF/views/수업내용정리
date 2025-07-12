@@ -1,0 +1,32 @@
+[수업내용정리] 스프링 트랜잭션 처리
+
+p.526(528) 선언적 트랜잭션 처리 (2가지 중 하나)
+	ㄴ @Transactional 어노테이션 사용
+	ㄴ <tx:annotation-driven> 설정 추가
+
+1. SL09_NLTRANSACTION2_TXADVICE -> SL09_NLTRANSACTION3_ANNOTATION
+
+2. servlet-context.xml
+	
+	<tx:annotation-driven transaction-manager="transactionManager"
+						  proxy-target-class="false"
+						  mode="proxy"
+	/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			

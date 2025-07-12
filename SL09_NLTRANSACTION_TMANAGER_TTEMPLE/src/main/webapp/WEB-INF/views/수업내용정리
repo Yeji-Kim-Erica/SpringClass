@@ -1,0 +1,137 @@
+[수업내용정리] 스프링 트랜잭션 처리
+
+1. SL08_NLJDBC2 -> SL09_NLTRANSACTION_TMANAGER_TTEMPLE
+
+p.505(507) Chapter 12 : 스프링의 트랜잭션 관리
+
+스프링에서 트랜잭션 관리 방법 3자기
+	1) 코드 기반 처리 - TransactionManager 활용
+	2) 
+
+2. TransactionManager 등록 -> root-context.xml에 등록
+   Spring JDBC, Mybatis -> DataSourceTransactionManager 등록
+
+3. 실습 내용
+	공지상황 글 쓰기 + 포인트 증가 트랜잭션
+	1) 공지사항에 새 글 작성 -> insert
+		+ 게시글을 작성한 작성자의 포인트를 1 증가 -> update
+		
+	2) 포인트 제약조건 설정 (3보다 크면 오류 발생)
+	
+	A. notices, member 테이블에 컬럼 추가 및 제약조건 설정
+		1) member 테이블에 point 칼럼 추가
+			ALTER TABLE member
+			ADD (point number(10) default(0));
+			
+		2) notices 테이블에 title 컬럼을 유일성 제약 조건
+			uk_notices_title -- 유일성 제약조건을 설정
+			ALTER TABLE notices
+			ADD CONSTRAINT uk_notices_title UNIQUE(title);
+			
+		3) member 테이블에 point 값이 3보다 작도록 제약조건 설정
+			ALTER TABLE member
+			ADD CONSTRAINT ck_member_point CHECK (point < 3);
+			
+		4) notices 테이블에 seq 컬럼 PK 제약조건 설정
+			ALTER TABLE notices
+			ADD CONSTRAINT pk_notices_seq PRIMARY KEY(seq);
+			
+		** notices 테이블 제약조건 확인
+		SELECT *
+		FROM user_constraints
+		WHERE table_name = 'NOTICES';
+				
+	B. org.doit.ik.domain 패키지
+		ㄴ MemberVO.java
+			: point 필드 추가
+			
+	C. org.doit.ik.persistence 패키지
+		ㄴ NoticeDao.java
+			: 트랜잭션 테스트를 위한 추상메서드 추가 (insertAndPointUpOfMember)
+	
+	D. org.doit.ik.persistence 패키지
+		ㄴ NoticeDaoImpl.java
+			: insertAndPointUpOfMember 오버라이딩
+		
+	E. org.doit.ik.controller 패키지
+		ㄴ CustomerController.java
+			: 공지사항 글쓰기 메서드 수정
+			
+	F.
+		SELECT id, point
+		FROM member
+		WHERE id = 'admin';
+		
+		SELECT 
+	
+	G. TM 트랜잭션 처리 : NoticeDaoImpl
+			
+*************************
+p.513(515) TransactionTemplate을 이용한 트랜잭션 처리 : TransactionTemplate 사용
+
+1. root-context.xml
+
+   <!-- p.514 트랜잭션 템플릿 -->
+   <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+	 <property name="transactionManager" ref="transactionManager" />
+   </bean>
+
+2. NoticeDaoImpl.java
+
+	@Autowired
+	private TransactionTemplate transactionTemplate;
+	
+	// [3] transactionTemplate을 사용한 트랜잭션 처리
+	@Override
+	public int insertAndPointUpOfMember(NoticeVO notice, String id) throws ClassNotFoundException, SQLException {
+		int result = 0;
+		
+		// 1. 공지사항 쓰기
+		String sql1 = "INSERT INTO NOTICES"
+				+ " (SEQ, TITLE, CONTENT, WRITER, REGDATE, HIT, FILESRC)"
+				+ " VALUES( "
+				+ "(SELECT NVL(MAX(TO_NUMBER(SEQ)),0)+1 FROM NOTICES), :title, :content, :writer, SYSDATE, 0, :filesrc)";
+		
+		// 2. 포인트 1 증가
+		String sql2 = " UPDATE MEMBER "
+				+ " SET point = point + 1 "
+				+ " WHERE id = :id ";
+		
+		result = this.transactionTemplate.execute(new TransactionCallback<Integer>() {
+
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				int rowCount = 0;
+				// 1. 공지사항 쓰기
+				SqlParameterSource paramSource = new BeanPropertySqlParameterSource(notice);
+				rowCount += npJdbcTemplate.update(sql1, paramSource);
+				
+				// 2. 포인트 1 증가
+				MapSqlParameterSource paramSource2 = new MapSqlParameterSource();
+				paramSource2.addValue("id", id);
+				rowCount += npJdbcTemplate.update(sql2, paramSource2);
+				
+				return rowCount;
+			}
+		});
+		
+		return result;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			

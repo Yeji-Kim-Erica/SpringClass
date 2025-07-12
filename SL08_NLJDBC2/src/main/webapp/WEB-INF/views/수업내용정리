@@ -1,7 +1,11 @@
 [수업내용정리]
 1. SL08_NLJDBC -> SL08_NLJDBC2
    JdbcTemplate -> [NamedParameter]JdbcTemplate
+   
 :  p.496(498) NamedParameterJdbcTemplate 클래스를 이용한 JDBC 프로그래밍
+
+	- JdbcTemplate : Sql문에서 파라미터에 ? 사용
+	- NamedParameterJdbcTemplate : Sql문에서 파라미터에 이름 사용 (예) :name
 
 2. NoticeDao.java 인터페이스
    NoticeDaoImpl.java 구현 클래스
