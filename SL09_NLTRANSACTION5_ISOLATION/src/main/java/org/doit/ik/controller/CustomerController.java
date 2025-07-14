@@ -73,6 +73,7 @@ public class CustomerController {
 	// 공지사항 상세보기 URL
 	@GetMapping("/noticeDetail.htm")
 	public String noticeDetail(@RequestParam("seq") String seq, Model model) throws Exception {
+		this.noticeDao.hitUp(seq);
 		NoticeVO notice  = this.noticeDao.getNotice(seq);
 		model.addAttribute("notice", notice);
 		return "noticeDetail.jsp";
@@ -112,7 +113,7 @@ public class CustomerController {
 		
 		int rowCount = this.memberShipService.insertAndPointUpOfMember(notice, "admin");
 		
-		if (rowCount >= 2) {
+		if (rowCount >= 1) {
 			rttr.addFlashAttribute("result", "Registered");
 			return "redirect:notice.htm";
 		} else {

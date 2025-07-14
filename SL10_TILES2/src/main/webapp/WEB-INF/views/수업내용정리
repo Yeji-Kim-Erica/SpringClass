@@ -1,0 +1,133 @@
+[수업내용정리] Tiles 사용해서 페이지 모듈화(집중화)
+
+SL09_NLTRANSACTION5_ISOLATION -> SL09_NLTRANSACTION5_ISOLATION
+
+1. WEB-INF/views 폴더 안으로 모든 jsp 파일을 이동
+
+2. webapp 폴더
+	ㄴ inc 폴더 == layout 폴더
+		ㄴ footer.jsp
+		ㄴ header.jsp
+		ㄴ layout.jsp == template.jsp
+
+3. webapp 폴더
+	ㄴ customer 폴더
+		ㄴ inc 폴더
+			ㄴ aside.jsp
+			ㄴ visual.jsp
+			ㄴ layout.jsp
+
+4. webapp 폴더
+	ㄴ joinus 폴더
+		ㄴ inc 폴더
+			ㄴ aside.jsp
+			ㄴ visual.jsp
+			ㄴ layout.jsp
+		
+5. notice.jsp, noticeDetail.jsp, noticeEdit.jsp, noticeReg.jsp
+	- header 태그 -> header.jsp
+	- footer 태그 -> footer.jsp
+	- visual 태그 -> visual.jsp
+	- navi 태그 -> aside.jsp
+	- content 태그 -> 기존 jsp (notice.jsp, noticeDetail.jsp, noticeEdit.jsp, noticeReg.jsp)
+	- 뼈대 -> layout.jsp
+	
+6. login.jsp, join.jsp, index.jsp
+
+--------------------------------------------------------
+- pom.xml
+
+		<!-- 7. Tiles -->
+		<dependency>
+           <groupId>org.apache.tiles</groupId>
+           <artifactId>tiles-extras</artifactId>
+           <version>${org.apache.tiles-version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.tiles</groupId>
+            <artifactId>tiles-core</artifactId>
+            <version>${org.apache.tiles-version}</version>
+          </dependency>  
+          <dependency>
+            <groupId>org.apache.tiles</groupId>
+            <artifactId>tiles-servlet</artifactId>
+            <version>${org.apache.tiles-version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.tiles</groupId>
+            <artifactId>tiles-jsp</artifactId>
+            <version>${org.apache.tiles-version}</version>
+          </dependency>
+
+- servlet-context.xml
+
+	<!--  Tiles  -->
+    <beans:bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+      <beans:property name="definitions">
+        <beans:list>
+          <beans:value>/WEB-INF/tiles/tiles.xml</beans:value>
+        </beans:list>
+      </beans:property>
+    </beans:bean>
+    
+    <beans:bean id="tilesViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+      <beans:property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView" />
+      <beans:property name="order" value="1" />
+    </beans:bean>
+    
+- tiles.xml
+
+<tiles-definitions>
+
+	<definition></definition>
+	
+</tiles-definitions>
+
+-----------------------------------------------------------------------------------------
+
+1) CustomerController.java
+	ㄴ notice.htm (공지사항 목록 요청)
+	
+	// 공지사항 목록 요청 URL
+	@GetMapping(value = "/notice.htm")
+	public String notices(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+						  @RequestParam(value = "field", required = false, defaultValue = "title") String field,
+						  @RequestParam(value = "query", required = false, defaultValue = "") String query,
+						  Model model) throws Exception {
+		
+		List<NoticeVO> list = this.noticeDao.getNotices(page, field, query);
+
+		model.addAttribute("list", list);
+		model.addAttribute("message", "Hello World!");
+
+		return "customer.notice";
+	}
+
+2) JoinController.java
+
+
+3) HomeController.java
+
+------------------------------------------------------------
+
+모든 jsp 파일이 WEB-INF 안에 있는 views 폴더에 들어가도록 이동시키기 (외부에 숨기기 위함)
+
+
+
+
+
+
+
+		
+		
+
+
+
+
+
+
+
+
+
+
+			

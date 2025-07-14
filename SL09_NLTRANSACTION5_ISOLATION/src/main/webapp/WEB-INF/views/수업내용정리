@@ -4,13 +4,109 @@ p.511(513) 격리 레벨 (isolation)
 
 1. SL09_NLTRANSACTION4_PROPAGATITON -> SL09_NLTRANSACTION5_ISOLATION
 
-2. 
+2. 격리레벨 (격리성, 격리 수준)
+	트랜잭션 처리 과정에서 두 개 이상의 트랜잭션이 서로 동시에 같은 자원을 접근할 때 각각의 트램잭션은 어떻게 처리해야 하는가?
 
-3. 실습
+ - 예) 화장실 1칸 (공유 자원)
+ 	A B C ... 사람 -> 줄세우기
+ 	화장실 안에 들어간 사람이 칸을 잠그고 나올 때 해제 : 동기화 처리
+ 	
+ - 예) 동기화 처리
+ 	CPU 1개
+ 	
+ 	A : 종이를 접어서 봉투에 넣는 작업
+ 	B : 봉투에 풀붙이는 작업
+ 	
+ 	A 30초당 15개, B 30초당 20개 -> 5개의 빈봉투 발생 (빈 채로 풀 붙음)
+ 													ㄴ 이런 일이 발생하지 않도록 동기화 처리를 해야 함
+ 	봉투 : 공유자원
+
+3. 용어 개념
+	(예시 상황)
+	- NoticeDao 인터페이스
+		ㄴ 조회수 증가 메서드 hitUp() 추가
+		ㄴ 조회수를 읽어오는 메서드 getHit() 추가
+	
+	1) Dirty Read 상황 : 다른 트랜잭션의 커밋되지 않은 변경을 읽음
+		@Transactional hitUp() {
+			글번호 16번 글 조회수가 10 -> update로 조회수 1 증가 11 ->  ?  -> 커밋/롤백
+																 ㄴ @Transactional getHit()
+		}
+		-> 커밋이 되지 않은 상태에서 데이터를 읽어감 -> 증가된 조회수(11)를 읽어갔는데 이후 롤백이 발생 -> Dirty Read 상황 발생
+	
+	2) Non-Relatable Read 상황 : 같은 쿼리를 두 번 실행했을 때, 중간에 다른 트랜잭션이 변경 후 커밋한 값을 읽음
+		: 반복적인 작업(2번 이상)을 할 때 일어나는 현상
+		
+		@T getHit()		->	 	?		->		@T getHit()
+			 10			 	ㄴ @T hitUp()			11
+								10 -> 11
+	
+		중간에 끼어든 Transactional 작업에 의해서 처음 작업과 두번째 작업의 내용(처리결과)이 달라지는 것을 Non-Repeatable Read 상황이라고 함
+	
+	3) Phantom Read 상황 : 같은 범위의 쿼리를 두 번 실행했을 때, 중간에 다른 트랜잭션이 새로운 행을 삽입하거나 삭제해 결과 행 개수가 달라짐
+		: 여러 개의 레코드를 읽어오는 작업을 반복할 시 발생하는 문제 상황
+		
+	- 예) 30번 부서원 SELECT문으로 조회 -> 6개의 레코드
+	
+		30번 부서원 조회	->	insert/delete	-> 30번 부서원 조회
+			ㄴ 6명			 추가 또는 삭제			ㄴ 7명 또는 5명		
+	
+
+4. 실습
+	[NoticeDao.java]
+	
+	// 조회수 증가
+	public void hitUp(String seq) throws ClassNotFoundException, SQLException;
+	
+	// 조회수 조회
+	public int getHit(String seq) throws ClassNotFoundException, SQLException;
 
 
+	[NoticeDaoImpl.java]
+	
+	@Override
+	@Transactional(isolation = Isolation.DEFAULT) // DBMS(오라클)에서 지원하는 격리 수준
+	public void hitUp(String seq) throws ClassNotFoundException, SQLException {
+		String sql = " UPDATE notices "
+					+ " SET hit = hit + 1 "
+					+ " WHERE seq = :seq ";
+		MapSqlParameterSource paramSource = new MapSqlParameterSource();
+		paramSource.addValue("seq", seq);
+		this.npJdbcTemplate.update(sql, paramSource);
+	}
+
+	@Override
+	@Transactional
+	public int getHit(String seq) throws ClassNotFoundException, SQLException {
+		String sql = " SELECT hit "
+				+ "	FROM notices "
+				+ " WHERE seq = :seq ";
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("seq", seq);
+		return this.npJdbcTemplate.queryForObject(sql, paramMap, Integer.class);
+	}
 
 
+	[CustomerController.java]
+	- noticeDetail
+	
+	- 
+	
+	제약조건 확인 삭제
+		1) 포인트 < 3 체크제약조건 삭제
+		2) 제목 중복 X 유일성제약조건 삭제
+	
+	SELECT *
+	FROM user_constraints
+	WHERE table_name = 'MEMBER';
+	WHERE table_name = 'NOTICES';
+	
+	-- 제약조건 삭제
+	ALTER TABLE MEMBER
+	DROP CONSTRAINT CK_MEMBER_POINT;
+	
+	ALTER TABLE NOTICES
+	DROP CONSTRAINT UK_NOTICES_TITLE;
 
 
 
