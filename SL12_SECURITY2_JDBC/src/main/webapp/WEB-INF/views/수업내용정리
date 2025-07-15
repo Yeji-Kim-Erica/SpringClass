@@ -1,0 +1,96 @@
+[수업내용정리]
+p.654 스프링 시큐리티를 이용한 웹 보안
+p.683 DB를 이용한 인증 처리 **
+
+SL12_SECURITY -> SL12_SECURITY2_JDBC
+
+-- 사용자 및 권한 매핑 DB 테이블 생성
+
+ALTER TABLE member 
+ADD CONSTRAINT pk_member_id PRIMARY KEY(id);
+
+ALTER TABLE MEMBER 
+MODIFY (pwd VARCHAR2(100));
+
+CREATE TABLE member_authorities
+(
+    username VARCHAR2(50) 
+  , authority VARCHAR2(50) 
+  , CONSTRAINT FK_memberauthorities_USERNAME FOREIGN KEY(username) REFERENCES member(id)
+);
+
+(권한 주기)
+INSERT INTO  member_authorities
+VALUES ( 'hong', 'ROLE_USER');
+
+INSERT INTO  member_authorities
+VALUES ( 'admin', 'ROLE_USER');
+INSERT INTO  member_authorities
+VALUES ( 'admin', 'ROLE_MANAGER');
+INSERT INTO  member_authorities
+VALUES ( 'admin', 'ROLE_ADMIN');
+
+COMMIT ;
+
+-- 스프링 시큐리티 설정 (security-context.xml)
+
+	(테이블 내부의 컬럼명이 동일할 경우 아래처럼 간단하게 사용 가능)
+	<!-- DB를 이용한 인증 처리 : 스프링 시큐리티 설정 -->
+	<!-- 인증 관리자 : 총괄 책임자 -->
+	<security:authentication-manager>
+		<!-- 인증 제공자 : 실무자 -->
+		<security:authentication-provider>
+			<security:jdbc-user-service data-source-ref="dataSource" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+-- 스프링 시큐리티에서 제공하는 암호화 기능
+<bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+
+----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			

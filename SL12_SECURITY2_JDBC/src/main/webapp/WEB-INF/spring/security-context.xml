@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:security="http://www.springframework.org/schema/security"
+   xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+<!-- p.682 상황별 스프링 시큐리티 설정 : 일부 경로 시큐리티 적용 안하기 -->
+<!-- css, js. image, static(정적) 등등 보안 필터 적용 X -->
+	<security:http pattern="/static/**" security="none"></security:http>
+	<security:http pattern="/design/**" security="none"></security:http>
+	<security:http pattern="/css/**" security="none"></security:http>
+	<security:http pattern="/js/**" security="none"></security:http>
+	<!-- <security:http pattern="/joinus/join.htm" security="none"></security:http> -->
+
+<!-- 오류 해결 -->
+<!-- org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'springSecurityFilterChain' available -->
+	<!-- p.681 웹 요청 인가 설정 표현식 : 접근 제어 태그, 식 사용 여부 (use-expressions="true") -->
+	<security:http use-expressions="true">
+		<!-- 접근 제어 태그 -->
+		<security:intercept-url pattern="/customer/noticeReg.htm" access="isAuthenticated()" />
+		<security:intercept-url pattern="/customer/noticeDel.htm" access="hasRole('ROLE_ADMIN')" />
+		<security:intercept-url pattern="/**" access="permitAll" />
+	
+		<security:form-login 
+			login-page = "/joinus/login.htm"
+			default-target-url="/index.htm"
+			authentication-failure-url="/joinus/login.htm?error=true"
+			authentication-success-handler-ref="customLoginSuccessHandler"
+		/>
+		
+		<!-- 접근 제어 방법 -->
+		<!-- [1] hong 로그인 후 삭제 버튼 클릭 → HTTP 상태 403 접근 금지 오류 발생 : 특정 URL로 이동하도록 하기 -->
+		<!-- /common/accessError.htm 요청을 처리하는 CommonController.java 필요 -->
+		<!-- <security:access-denied-handler error-page="/common/accessError.htm" /> -->
+		
+		<!-- [2] 접근 제한이 발생한 경우, 다양한 처리를 하고 싶다면... -->
+		<!-- AccessDeniedHandler 인터페이스를 구현 -->
+		<!-- org.doit.security.CustomAccessDeniedHandler.java -->
+		<security:access-denied-handler ref="customAccessDeniedHandler" />
+		
+		<!-- 로그아웃 -->
+		<security:logout invalidate-session="true" 
+						 logout-success-url="/"
+						 logout-url="/joinus/logout.htm" />
+		<!-- 로그아웃을 성공하고 난 뒤 여러 작업이 더 필요하다면 속성을 추가하면 됨 : 클래스로 선언 후 빈 등록 -->
+		<!-- success-handler-ref="logoutSuccessHandler" -->
+		
+	</security:http>
+	
+	<!-- PasswordEncoder -->
+	<bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+	
+	<!-- DB를 이용한 인증 처리 : 스프링 시큐리티 설정 -->
+	<!-- p.684 -->
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<!-- p.693 -->
+			<security:jdbc-user-service data-source-ref="dataSource" 
+										users-by-username-query="SELECT id AS username, pwd AS password, 1 AS enabled FROM member WHERE id = ? "
+										authorities-by-username-query="SELECT username, authority FROM member_authorities WHERE username = ? "
+			/>
+			<security:password-encoder ref="bCryptPasswordEncoder" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+	
+	<!-- CSRF 토큰 비활성화 -->
+	<!-- <security:csrf disabled="true" /> -->
+
+</beans>
