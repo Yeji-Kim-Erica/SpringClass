@@ -1,0 +1,106 @@
+[수업내용정리] 
+
+SL12_SECURITY2_JDBC → SL13_SECURITY3_USERDETAILSSERVICE
+
+p. 697 커스텀 UserDetailsService 구현 사용하기
+
+- Authentication Manager 인터페이스 구현
+- Authentication Provider 인터페이스 구현
+- UserDetailsService 인터페이스 구현
+
+셋 중 스프링 시큐리티가 제공하는 기능을 최대한 활용할 수 있는 것 : UserDetailsService 인터페이스를 구현하는 것
+
+	1. org.doit.domain.AuthVO 클래스 선언
+	2. org.doit.domain.MemberVO 클래스 수정
+	3. 사용자의 회원 정보 + 권한 정보 조회하는 쿼리
+		1) MemberMapper.java 인터페이스 수정
+		
+		// 회원 정보 + 권한 정보
+		public MemberVO read(@Param("userid") String id) throws ClassNotFoundException, SQLException;
+		
+		2) MemberMapper.xml 수정
+		
+		  <!-- public MemberVO read(@Param("userid") String id) throws ClassNotFoundException, SQLException; -->
+		    <resultMap type="org.doit.ik.domain.MemberVO" id="memberMap">
+		        <id property="id" column="id" /> 
+		         <result property="pwd" column="pwd" />
+		         <result property="name" column="name"  />
+		         <result property="regdate" column="regdate" />   
+		         <collection property="authList" resultMap="authMap"></collection>
+		    </resultMap>
+		    <resultMap type="org.doit.ik.domain.AuthVO" id="authMap">
+		      <result property="username" column="username" />
+		      <result property="authority" column="authority" />  
+		    </resultMap>
+		    <select id="read" resultMap="memberMap">
+		      SELECT id, pwd, name, 1 as enabled, regdate, authority
+		       FROM  member  m LEFT JOIN member_authorities auth ON m.id = auth.username
+		       WHERE m.id = #{ userid }
+		    </select>
+		
+	4. UserDetailsService 인터페이스를 구현한 클래스 선언
+		ㄴ org.doit.ik.domain.security.CustomUserDetailsService.java
+			ㄴ public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {} 메서드
+		
+	- security-context.xml
+	
+		<security:authentication-manager>	 
+		  <security:authentication-provider user-service-ref="customUserDetailsService">
+		    <security:password-encoder ref="bCryptPasswordEncoder" />
+		  </security:authentication-provider>
+		</security:authentication-manager>
+
+	5. User 를 extend한 클래스 선언
+		ㄴ org.doit.ik.domain.security.CustomerUser.java
+		
+	6. 확인
+		1) 공지사항 쓰기 (noticeReg.jsp 이동)
+
+
+✅ 요약: 처리 흐름 도식화
+
+[Login Form]
+    ↓ (username + password)
+[UsernamePasswordAuthenticationFilter]
+    ↓
+[AuthenticationManager]
+    ↓
+[DaoAuthenticationProvider]
+    ↓
+[JdbcUserDetailsService]
+    ↓ SQL 실행 (users, authorities)
+    ↓
+UserDetails 생성 + 비밀번호 검증 (BCrypt)
+    ↓
+Authentication 성공 → SecurityContext 저장
+    ↓
+요청 보호 (intercept-url, @PreAuthorize 등으로 권한 확인)
+
+
+
+-----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

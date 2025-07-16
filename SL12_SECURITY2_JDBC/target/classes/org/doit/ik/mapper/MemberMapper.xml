@@ -5,28 +5,19 @@
 
 <mapper namespace="org.doit.ik.mapper.MemberMapper">
 
-<!-- id에 해당하는 멤버 객체를 반환하는 메서드 -->
-<!-- public MemberVO getMember(@Param("id") String id) throws ClassNotFoundException, SQLException; -->
-	<select id="getMember" resultType="org.doit.ik.domain.MemberVO">
-		SELECT * 
-		FROM member
-		WHERE id = #{id}
-	</select>
-  
-<!-- 회원가입 메서드 -->
-<!-- public int insert(MemberVO member) throws ClassNotFoundException, SQLException; -->
-	<insert id="insert">
-		INSERT INTO MEMBER 
-		(id, pwd, name, gender, birth, is_lunar, cphone, email, habit, regdate)
-		VALUES( #{id}, #{pwd}, #{name}, #{gender}, #{birth}, #{is_lunar}, #{cphone}, #{email}, #{habit, javaType=String, jdbcType=VARCHAR}, SYSDATE)
-	</insert>
-	
-<!-- 작성자 포인트 증가 -->
-<!-- public int pointUp(String id) throws ClassNotFoundException, SQLException; -->
-	<update id="pointUp">
-		UPDATE MEMBER 
-		SET point = point + 1
-		WHERE id = #{id}
-	</update>
+  <!-- public MemberVO getMember(@Param("id") String id) throws ClassNotFoundException, SQLException; -->
+  <select id="getMember" resultType="org.doit.ik.domain.MemberVO">
+    SELECT * 
+	FROM MEMBER 
+	WHERE id = #{id}
+  </select>
+	  
+  <!-- public int insert(MemberVO member) throws ClassNotFoundException, SQLException; -->
+  <insert id="insert">
+    INSERT INTO MEMBER 
+     ( ID, PWD, NAME, GENDER, BIRTH, IS_LUNAR, CPHONE, EMAIL, HABIT, REGDATE) 
+	 VALUES( #{id}, #{ pwd }, #{name}, #{gender}, #{birth}, #{is_lunar},
+	  #{cphone}, #{email}, #{habit}, SYSDATE)
+  </insert>
   
 </mapper>  

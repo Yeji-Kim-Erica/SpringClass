@@ -1,0 +1,229 @@
+[수업내용정리]
+p.654 스프링 시큐리티를 이용한 웹 보안
+p.683 DB를 이용한 인증 처리 **
+
+SL12_SECURITY -> SL12_SECURITY2_JDBC
+
+-- 사용자 및 권한 매핑 DB 테이블 생성
+
+ALTER TABLE member 
+ADD CONSTRAINT pk_member_id PRIMARY KEY(id);
+
+ALTER TABLE MEMBER 
+MODIFY (pwd VARCHAR2(100));
+
+CREATE TABLE member_authorities
+(
+    username VARCHAR2(50) 
+  , authority VARCHAR2(50) 
+  , CONSTRAINT FK_memberauthorities_USERNAME FOREIGN KEY(username) REFERENCES member(id)
+);
+
+(권한 주기)
+INSERT INTO  member_authorities
+VALUES ( 'hong', 'ROLE_USER');
+
+INSERT INTO  member_authorities
+VALUES ( 'admin', 'ROLE_USER');
+INSERT INTO  member_authorities
+VALUES ( 'admin', 'ROLE_MANAGER');
+INSERT INTO  member_authorities
+VALUES ( 'admin', 'ROLE_ADMIN');
+
+COMMIT ;
+
+-- 스프링 시큐리티 설정 (security-context.xml)
+
+	(테이블 내부의 컬럼명이 동일할 경우 아래처럼 간단하게 사용 가능)
+	<!-- DB를 이용한 인증 처리 : 스프링 시큐리티 설정 -->
+	<!-- 인증 관리자 : 총괄 책임자 -->
+	<security:authentication-manager>
+		<!-- 인증 제공자 : 실무자 -->
+		<security:authentication-provider>
+			<security:jdbc-user-service data-source-ref="dataSource" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+-- 스프링 시큐리티에서 제공하는 암호화 기능
+<bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+
+● enctype="multipart/form-data"와 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> 동시 처리하면 오류가 발생함
+	- 해결 방법
+	<form action="/customer/noticeReg.htm?${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data">
+
+----------------------------------
+아래 Spring Security XML 설정은 JDBC 기반 사용자 인증을 사용하는 전형적인 Spring Legacy 방식입니다.
+이 설정이 어떻게 작동하는지, Spring Security의 로그인 처리 과정 전반을 단계별로 설명드릴게요.
+
+✅ 설정 분석
+xml
+복사
+편집
+<security:authentication-manager>
+  <security:authentication-provider>
+    <security:jdbc-user-service 
+        data-source-ref="dataSource"
+        users-by-username-query="SELECT id AS USERNAME, pwd AS PASSWORD, 1 as enabled FROM member WHERE id = ?"
+        authorities-by-username-query="SELECT username, authority FROM member_authorities WHERE username = ?" />
+    
+    <security:password-encoder ref="bCryptPasswordEncoder" />
+  </security:authentication-provider>
+</security:authentication-manager>
+🔍 Spring Security 처리 과정 상세 설명
+1. 사용자 로그인 시도
+사용자가 로그인 폼에서 id, pwd 입력 후, login-processing-url로 요청을 보냄 (예: /login).
+
+Spring Security의 UsernamePasswordAuthenticationFilter가 요청을 가로챕니다.
+
+2. Authentication 객체 생성
+UsernamePasswordAuthenticationFilter는 사용자가 입력한 id, pwd로 UsernamePasswordAuthenticationToken 객체를 생성합니다.
+
+java
+복사
+편집
+new UsernamePasswordAuthenticationToken("id", "pwd");
+3. AuthenticationManager 호출
+위 설정의 <security:authentication-manager>가 작동하고,
+
+내부의 <security:authentication-provider> 가 AuthenticationProvider 역할을 수행하여, 사용자 정보를 확인합니다.
+
+4. JDBC를 통한 사용자 정보 조회
+jdbc-user-service가 설정되어 있으므로 DB를 통해 사용자를 조회합니다.
+
+✅ 사용자 정보 조회 쿼리:
+sql
+복사
+편집
+SELECT id AS USERNAME, pwd AS PASSWORD, 1 as enabled FROM member WHERE id = ?
+이 결과는 org.springframework.security.core.userdetails.UserDetails 객체로 매핑됩니다.
+
+enabled 값이 1이어야 활성 사용자로 인정됨.
+
+✅ 권한 정보 조회 쿼리:
+sql
+복사
+편집
+SELECT username, authority FROM member_authorities WHERE username = ?
+예: ('user1', 'ROLE_USER'), ('admin', 'ROLE_ADMIN')
+
+5. 비밀번호 확인 (BCryptPasswordEncoder)
+설정에 따라 bCryptPasswordEncoder로 DB의 비밀번호와 사용자가 입력한 비밀번호를 비교:
+
+java
+복사
+편집
+passwordEncoder.matches(rawPassword, encodedPasswordFromDB)
+❗ DB에 저장된 비밀번호는 반드시 BCrypt로 암호화되어 있어야 함 (예: $2a$10$...)
+
+6. 인증 성공 처리
+인증에 성공하면 SecurityContextHolder에 인증 객체를 저장하고,
+
+사용자를 SecurityContext에 등록 → 로그인 완료 상태가 됩니다.
+
+이후의 모든 요청은 이 인증 정보를 바탕으로 처리됩니다.
+
+7. 접근 제어
+로그인 후 사용자가 페이지를 요청하면 <security:intercept-url> 등의 설정을 통해 권한이 있는지 확인합니다.
+
+SecurityContextHolder.getContext().getAuthentication() 을 통해 현재 로그인 사용자 정보를 조회할 수 있습니다.
+
+🔐 비밀번호 인코더 설정
+xml
+복사
+편집
+<bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+Spring Security 4 이후부터는 비밀번호는 반드시 암호화 저장이 권장되며, BCrypt가 가장 일반적입니다.
+
+✅ 요약: 처리 흐름 도식화
+plaintext
+복사
+편집
+[Login Form]
+    ↓ (username + password)
+[UsernamePasswordAuthenticationFilter]
+    ↓
+[AuthenticationManager]
+    ↓
+[DaoAuthenticationProvider]
+    ↓
+[JdbcUserDetailsService]
+    ↓ SQL 실행 (users, authorities)
+    ↓
+UserDetails 생성 + 비밀번호 검증 (BCrypt)
+    ↓
+Authentication 성공 → SecurityContext 저장
+    ↓
+요청 보호 (intercept-url, @PreAuthorize 등으로 권한 확인)
+🔎 참고: 실제 로그인 실패 시 문제 예시
+원인   설명
+비밀번호 인코딩 불일치   DB에 저장된 암호화 방식이 BCrypt가 아닐 경우
+사용자가 존재하지 않음   ID가 DB에 없거나, 쿼리 오류
+enabled = 0   계정이 비활성 상태
+권한 누락   authorities 테이블에 권한 미존재
+
+필요하시면 전체 로그인 구성 예시 (JSP + Controller + DB) 도 제공해드릴 수 있어요.
+----------------------------------
+
+-- 삭제
+<security:intercept-url pattern="/customer/noticeDel.htm" access="hasRole('ROLE_USER')"  />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			
