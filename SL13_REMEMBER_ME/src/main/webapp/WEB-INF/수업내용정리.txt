@@ -1,0 +1,69 @@
+[수업내용정리] 
+
+SL12_SECURITY3_USERDETAILSSERVICE → SL13_REMEMBER_ME
+
+자동로그인 (remember-me)
+
+1. 한 번 로그인하면 일정 시간 동안 다시 로그인 하지 않아도 되는 기능.
+
+2. 영어로 remember-me
+
+3. 대부분 쿠키(cookie)를 이용해서 구현.
+
+4. 스프링 시큐리티의 경우 
+    1) 메모리 상에서 처리하거나 
+    2) DB를 이용하는 형태로 구현 가능
+    
+5. security-context.xml
+    ㄴ <security:remember-me> 태그 추가  
+    
+	   <!-- 자동로그인 -->
+	   <security:remember-me data-source-ref="dataSource" token-validity-seconds="604800" />
+	   
+	   <!-- 자동로그인 해제 -->
+	   <security:logout /> 에 속성 추가
+	   delete-cookies="remember-me,JSESSION_ID"
+    
+6. 테이블 
+    ㄴ Table PERSISTENT_LOGINS이(가) 생성되었습니다.
+ create table persistent_logins
+ (
+     username varchar2(64) not null
+   , series varchar2(64) primary key
+   , token varchar2(64) not null
+   , last_used date not null   
+ );
+
+7. login.jsp - 자동로그인 내용 추가
+
+<li>
+<label for="remember-me"> Remember-Me </label>
+<input type="checkbox" name="remember-me" class="text" id="remember-me" />
+</li>
+
+-----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

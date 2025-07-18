@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <aop-reference-model>
-<aop-project name="SL13_SECURITY3_USERDETAILSSERVICE"/>
 <aop-project name="SL03_DI"/>
+<aop-project name="SL14_REST"/>
+<aop-project name="SL13_REMEMBER_ME"/>
 <aop-project name="SL08_NLJDBC"/>
 <aop-project name="SL08_NLJDBC2"/>
-<aop-project name="SL12_SECURITY2_JDBC_KYJ"/>
 </aop-reference-model>

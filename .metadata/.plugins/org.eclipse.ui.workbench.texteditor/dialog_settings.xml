@@ -8,6 +8,9 @@
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="gson"/>
+			<item value="ㅎson"/>
+			<item value="jackson"/>
 			<item value="CommonsMultipartResolver"/>
 			<item value="CommonsMultipartFile"/>
 			<item value="MultipartFile"/>
@@ -20,9 +23,6 @@
 			<item value="&lt;org.apache.tiles-version&gt;3.0.8&lt;/org.apache.tiles-version&gt;"/>
 			<item value="Tiles"/>
 			<item value="notice"/>
-			<item value="noticeDetail"/>
-			<item value="jsp"/>
-			<item value="form"/>
 		</list>
 		<list key="replacehistory">
 			<item value="MultipartFile"/>
@@ -45,5 +45,12 @@
 	<section name="org.eclipse.ui.texteditor.GotoLineAction$GotoLineDialog_dialogBounds">
 		<item key="DIALOG_X_ORIGIN" value="724"/>
 		<item key="DIALOG_Y_ORIGIN" value="392"/>
+	</section>
+	<section name="org.eclipse.wst.xml.ui.internal.preferences.XMLTemplatePreferencePage$XMLEditTemplateDialog_dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="350"/>
+		<item key="DIALOG_Y_ORIGIN" value="57"/>
+		<item key="DIALOG_WIDTH" value="612"/>
+		<item key="DIALOG_HEIGHT" value="331"/>
+		<item key="DIALOG_FONT_NAME" value="1|맑은 고딕|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|맑은 고딕"/>
 	</section>
 </section>
